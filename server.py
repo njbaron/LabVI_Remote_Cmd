@@ -24,12 +24,17 @@ def handle_client(connection, address):
     print("Client Count:", client_count)
     #print(arguments[2].split(" "))
     #print(check_output(arguments[2].split(" ")))
-    for i in range(int(arguments[0])):
-        result = (datetime.datetime.now().strftime("%H:%M:%S.%f") + " " + str(check_output(arguments[2].split(" ")))[2:-1]).encode()
-        while len(result) > response_size:
-            connection.send(result[0:1023])
-            result = result[1024:]
-        sleep(int(arguments[1]))
+    try:
+        for i in range(int(arguments[0])):
+            result = (datetime.datetime.now().strftime("%H:%M:%S.%f") + " " + str(check_output(arguments[2].split(" ")))[2:-1]).encode()
+            while len(result) > response_size:
+                connection.send(result[0:1023])
+                result = result[1024:]
+            sleep(int(arguments[1]))
+    except ConnectionResetError:
+        print("Connection Lost")
+    except:
+        print("Output Failed")
     connection.close()
     client_count -= 1
     print("Client Count:", client_count)
