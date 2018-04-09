@@ -1,7 +1,6 @@
 import sys
 import socket
 
-
 if len(sys.argv) != 6:
     print("[ERROR] " + str(sys.argv[0]) + " Incorrect command line arguments.")
     exit(1)
