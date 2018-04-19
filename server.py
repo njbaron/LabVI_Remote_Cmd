@@ -85,9 +85,10 @@ def get_result(argarr):
         result, err = subprocess.Popen(argarr.split(' '), stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
         if err:
             result = err
+        result = str(result)[2:-1]
     except:
         result = "Command Unsuccessful"
-    result = (datetime.datetime.now().strftime("%H:%M:%S.%f") + " " + str(result)[2:-1]).encode()
+    result = (datetime.datetime.now().strftime("%H:%M:%S.%f") + " " + result).encode()
     print("Result:", result)
     return result
 
