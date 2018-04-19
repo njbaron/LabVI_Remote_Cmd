@@ -15,7 +15,7 @@ command = sys.argv[5]
 
 
 time_out = 1
-time_out_long = int(time_delay) + 0.5
+time_out_long = float(time_delay) + 0.5
 response_size = 1024
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -28,14 +28,13 @@ for i in range(int(execution_count)):
     result = ""
     try:
         while True:
-            result += str(sock.recvfrom(response_size))[2:-1]
+            result += str(sock.recvfrom(response_size)[0])[2:-1]
             sock.settimeout(time_out)
     except:
         print("Result:")
 
     if result == "":
         print("[WARNING] " + sys.argv[0] + " Command Unsuccessful")
-        exit(1)
     else:
         print(result)
     sock.settimeout(time_out_long)

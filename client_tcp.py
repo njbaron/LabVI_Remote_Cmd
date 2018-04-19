@@ -14,7 +14,7 @@ time_delay = sys.argv[4]
 command = sys.argv[5]
 
 time_out = 1
-time_out_long = int(time_delay) + 0.5
+time_out_long = float(time_delay) + 0.5
 response_size = 1024
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

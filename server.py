@@ -2,7 +2,7 @@ import sys
 import socket
 import threading
 import datetime
-from subprocess import check_output
+import subprocess
 from time import sleep
 
 if len(sys.argv) != 2:
@@ -18,7 +18,7 @@ running = True
 
 def tcp_server():
     sock_tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    sock_tcp.bind(("localhost", int(sys.argv[1])))
+    sock_tcp.bind(('', int(sys.argv[1])))
     sock_tcp.listen(1)
 
     while running:
@@ -35,11 +35,11 @@ def handle_client_tcp(connection, address):
     print("Client Open:", client_count)
     try:
         for i in range(int(arguments[0])):
-            result = (datetime.datetime.now().strftime("%H:%M:%S.%f") + " " + str(check_output(arguments[2]))[
-                                                                              2:-1]).encode()
+            result = get_result(arguments[2])
             while len(result) > response_size:
                 connection.send(result[0:1023])
                 result = result[1024:]
+            connection.send(result)
             sleep(int(arguments[1]))
     except ConnectionResetError:
         print("Connection Lost")
@@ -51,7 +51,7 @@ def handle_client_tcp(connection, address):
 
 def udp_server():
     sock_udp = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    sock_udp.bind(("localhost", int(sys.argv[1])))
+    sock_udp.bind(('', int(sys.argv[1])))
 
     while running:
         data, address = sock_udp.recvfrom(4096)
@@ -67,11 +67,11 @@ def handle_client_udp(sock, data, address):
     print("Client Open:", client_count)
     try:
         for i in range(int(arguments[0])):
-            result = (datetime.datetime.now().strftime("%H:%M:%S.%f") + " " + str(check_output(arguments[2]))[
-                                                                              2:-1]).encode()
+            result = get_result(arguments[2])
             while len(result) > response_size:
                 sock.sendto(result[0:1023], address)
                 result = result[1024:]
+            sock.sendto(result, address)
             sleep(int(arguments[1]))
     except ConnectionResetError:
         print("Connection Lost")
@@ -79,6 +79,17 @@ def handle_client_udp(sock, data, address):
         print("Output Failed")
     client_count -= 1
     print("Client Close:", client_count)
+
+def get_result(argarr):
+    try:
+        result, err = subprocess.Popen(argarr.split(' '), stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
+        if err:
+            result = err
+    except:
+        result = "Command Unsuccessful"
+    result = (datetime.datetime.now().strftime("%H:%M:%S.%f") + " " + str(result)[2:-1]).encode()
+    print("Result:", result)
+    return result
 
 
 if __name__ == "__main__":
